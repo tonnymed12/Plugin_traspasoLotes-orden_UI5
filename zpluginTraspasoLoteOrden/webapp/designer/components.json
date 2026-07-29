@@ -1,0 +1,15 @@
+{
+	"components": [
+		{
+			"id": "zpluginTraspasoLoteOrden",
+			"type": "VIEW_PLUGIN",
+			"allowMultipleInstances": false,
+			"name": "serviacero.custom.plugins.zpluginTraspasoLoteOrden.zpluginTraspasoLoteOrden",
+			"propertyEditor": "serviacero.custom.plugins.zpluginTraspasoLoteOrden.zpluginTraspasoLoteOrden.builder.PropertyEditor",
+			"i18n": "serviacero.custom.plugins.zpluginTraspasoLoteOrden.zpluginTraspasoLoteOrden.i18n.i18n",
+            "productionProcessEnabled": true,
+           "productionProcessTitle": "zpluginTraspasoLoteOrden",
+			"supportedPodTypes": ["WORK_CENTER","OPERATION","ORDER"]
+		}   
+	]
+}
