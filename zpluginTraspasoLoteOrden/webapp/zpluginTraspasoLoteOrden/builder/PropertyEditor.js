@@ -21,21 +21,16 @@ sap.ui.define([
 			
 			this.addSwitch(oPropertyFormContainer, "backButtonVisible", oData);
 			this.addSwitch(oPropertyFormContainer, "closeButtonVisible", oData);
-						
 			this.addInputField(oPropertyFormContainer, "title", oData);
-			this.addInputField(oPropertyFormContainer, "text", oData);
 
             oFormContainer = oPropertyFormContainer;
 		},
 		
 		getDefaultPropertyData: function(){
 			return {
-				
 				"backButtonVisible": true,
 				"closeButtonVisible": true,
-                "title": "zpluginTraspasoLoteOrden",
-				"text": "zpluginTraspasoLoteOrden"
-                
+                "title": "Traspaso de Lotes a Orden"
 			};
 		}
 

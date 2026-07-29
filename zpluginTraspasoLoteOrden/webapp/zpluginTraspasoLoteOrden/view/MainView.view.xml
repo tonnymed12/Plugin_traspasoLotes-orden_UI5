@@ -1,37 +1,213 @@
-<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml" controllerName="serviacero.custom.plugins.zpluginTraspasoLoteOrden.zpluginTraspasoLoteOrden.controller.MainView" width="100%" height="100%">
-		
-        <Panel 
-                id="panelPlugin"  
-                width="100%"
-                height="100%"
-                expandable="false"
-                expanded="false"
-                accessibleRole="Region"
-                backgroundDesign="Transparent"
-                class="sapUiNoContentPadding">  
+<mvc:View
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    controllerName="serviacero.custom.plugins.zpluginTraspasoLoteOrden.zpluginTraspasoLoteOrden.controller.MainView"
+    width="100%"
+    height="100%">
+
+    <Panel
+        id="panelPlugin"
+        width="100%"
+        height="100%"
+        expandable="false"
+        accessibleRole="Region"
+        backgroundDesign="Transparent"
+        class="sapUiNoContentPadding">
+
         <headerToolbar>
             <Toolbar height="3rem">
-                <Button
-                    id="backButton"
-                    visible="false"
-                    text="{i18n>template.back.btn}"
-                    tooltip="{i18n>template.back.tooltip}"
-                    icon="sap-icon://nav-back"
-                    press="onBackPress"/>
-                <Title id="headerTitle" text=""/>
+                <Button id="backButton"  visible="false" text="{i18n>back.btn}"  tooltip="{i18n>back.tooltip}" icon="sap-icon://nav-back"  press="onBackPress"/>
+                <Title  id="headerTitle" text=""/>
                 <ToolbarSpacer/>
-                <Button
-                    id="closeButton"
-                    visible="false"
-                    tooltip="{i18n>template.close.tooltip}"
-                    icon="sap-icon://decline"
-                    press="onClosePress"/>
+                <Button id="closeButton" visible="false" tooltip="{i18n>close.tooltip}" icon="sap-icon://decline" press="onClosePress"/>
             </Toolbar>
         </headerToolbar>
-        <content> 
-            <Text id="textPlugin" text="template" class="textFontSize" textAlign="Center" width="100%"/>
+
+        <content>
+            <!-- ═══════════════════════════════════════════
+                 SECCIÓN 1 — Lotes escaneados en la operación actual
+            ════════════════════════════════════════════ -->
+            <Panel
+                id="panelLotesOrigen"
+                width="100%"
+                expandable="true"
+                expanded="true"
+                headerText="{i18n>lotesOrigen.title}"
+                backgroundDesign="Solid"
+                class="sapUiSmallMarginBottom">
+                <content>
+                    <Table
+                        id="idLotesOrigenTable"
+                        items="{lotesOrigen>/items}"
+                        width="100%"
+                        alternateRowColors="true"
+                        noDataText="{i18n>noLotesOrigen}">
+                        <headerToolbar>
+                            <Toolbar>
+                                <Title text="{i18n>lotesOrigen.tableTitle}"/>
+                                <ToolbarSpacer/>
+                                <Button
+                                    id="refreshLotesBtn"
+                                    icon="sap-icon://refresh"
+                                    text="{i18n>refresh}"
+                                    press="onRefreshLotesOrigen"
+                                    type="Attention"/>
+                            </Toolbar>
+                        </headerToolbar>
+                        <columns>
+                            <Column width="5%"  hAlign="Center"><Text text="{i18n>col.secuencia}"/></Column>
+                            <Column width="25%" hAlign="Left">  <Text text="{i18n>col.material}"/></Column>
+                            <Column width="20%" hAlign="Left">  <Text text="{i18n>col.lote}"/></Column>
+                            <Column width="15%" hAlign="Right"> <Text text="{i18n>col.cantidad}"/></Column>
+                            <Column width="10%" hAlign="Left">  <Text text="{i18n>col.uom}"/></Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem vAlign="Middle">
+                                <cells>
+                                    <Text text="{lotesOrigen>secuencia}"/>
+                                    <Text text="{lotesOrigen>material}"/>
+                                    <Text text="{lotesOrigen>lote}"/>
+                                    <Text text="{lotesOrigen>cantidad}"/>
+                                    <Text text="{lotesOrigen>uom}"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </content>
+            </Panel>
+
+            <!-- ═══════════════════════════════════════════
+                 SECCIÓN 2 — Filtros para buscar la orden destino
+            ════════════════════════════════════════════ -->
+            <Panel
+                id="panelFiltros"
+                width="100%"
+                expandable="true"
+                expanded="true"
+                headerText="{i18n>filtros.title}"
+                backgroundDesign="Solid"
+                class="sapUiSmallMarginBottom">
+                <content>
+                    <HBox
+                        width="100%"
+                        alignItems="End"
+                        wrap="Wrap"
+                        class="sapUiSmallMarginBeginEnd sapUiSmallMarginBottom">
+
+                        <VBox width="20%" class="sapUiSmallMarginEnd">
+                            <Label text="{i18n>filtro.orden}" labelFor="inputOrden"/>
+                            <Input id="inputOrden" placeholder="{i18n>filtro.orden.placeholder}" submit="onBuscarOrdenes"/>
+                        </VBox>
+
+                        <VBox width="15%" class="sapUiSmallMarginEnd">
+                            <Label text="{i18n>filtro.fechaDesde}" labelFor="dpFechaDesde"/>
+                            <DatePicker id="dpFechaDesde" valueFormat="yyyy-MM-dd" displayFormat="dd/MM/yyyy"/>
+                        </VBox>
+
+                        <VBox width="15%" class="sapUiSmallMarginEnd">
+                            <Label text="{i18n>filtro.fechaHasta}" labelFor="dpFechaHasta"/>
+                            <DatePicker id="dpFechaHasta" valueFormat="yyyy-MM-dd" displayFormat="dd/MM/yyyy"/>
+                        </VBox>
+
+                        <VBox width="15%" class="sapUiSmallMarginEnd">
+                            <Label text="{i18n>filtro.tipo}" labelFor="selTipo"/>
+                            <Select id="selTipo">
+                                <items>
+                                    <core:Item key=""       text="{i18n>filtro.tipo.todos}"/>
+                                    <core:Item key="PRODUCTION" text="{i18n>filtro.tipo.produccion}"/>
+                                    <core:Item key="REWORK"     text="{i18n>filtro.tipo.retrabajo}"/>
+                                </items>
+                            </Select>
+                        </VBox>
+
+                        <VBox width="15%" class="sapUiSmallMarginEnd">
+                            <Label text="{i18n>filtro.status}" labelFor="selStatus"/>
+                            <Select id="selStatus">
+                                <items>
+                                    <core:Item key=""         text="{i18n>filtro.status.todos}"/>
+                                    <core:Item key="RELEASED" text="{i18n>filtro.status.released}"/>
+                                    <core:Item key="NEW"      text="{i18n>filtro.status.new}"/>
+                                    <core:Item key="HOLD"     text="{i18n>filtro.status.hold}"/>
+                                </items>
+                            </Select>
+                        </VBox>
+
+                        <VBox justifyContent="End">
+                            <Button
+                                id="btnBuscar"
+                                text="{i18n>btn.buscar}"
+                                icon="sap-icon://search"
+                                type="Emphasized"
+                                press="onBuscarOrdenes"/>
+                        </VBox>
+                    </HBox>
+                </content>
+            </Panel>
+
+            <!-- ═══════════════════════════════════════════
+                 SECCIÓN 3 — Tabla de órdenes destino
+            ════════════════════════════════════════════ -->
+            <Panel
+                id="panelOrdenes"
+                width="100%"
+                expandable="false"
+                backgroundDesign="Solid">
+                <content>
+                    <Table
+                        id="idOrdenesTable"
+                        items="{ordenes>/items}"
+                        width="100%"
+                        alternateRowColors="true"
+                        noDataText="{i18n>noOrdenes}"
+                        mode="SingleSelectMaster"
+                        selectionChange="onOrdenSelectionChange"
+                        growing="true"
+                        growingThreshold="20">
+                        <headerToolbar>
+                            <Toolbar>
+                                <Title text="{i18n>ordenes.tableTitle}"/>
+                                <ToolbarSpacer/>
+                                <Button
+                                    id="btnTraspasar"
+                                    text="{i18n>btn.traspasar}"
+                                    icon="sap-icon://forward"
+                                    type="Accept"
+                                    enabled="{ordenes>/ordenSeleccionada}"
+                                    press="onTraspasar"/>
+                            </Toolbar>
+                        </headerToolbar>
+                        <columns>
+                            <Column width="20%" hAlign="Left"><Text text="{i18n>col.orden}"/></Column>
+                            <Column width="25%" hAlign="Left"><Text text="{i18n>col.material}"/></Column>
+                            <Column width="15%" hAlign="Left"><Text text="{i18n>col.fechaCreacion}"/></Column>
+                            <Column width="15%" hAlign="Right"><Text text="{i18n>col.cantidadPlaneada}"/></Column>
+                            <Column width="10%" hAlign="Left"><Text text="{i18n>col.uom}"/></Column>
+                            <Column width="15%" hAlign="Center"><Text text="{i18n>col.status}"/></Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem
+                                vAlign="Middle"
+                                type="Active">
+                                <cells>
+                                    <Text text="{ordenes>order}"/>
+                                    <Text text="{ordenes>material}"/>
+                                    <Text text="{path: 'ordenes>createdDateTime', formatter: '.formatter.formatDate'}"/>
+                                    <Text text="{ordenes>plannedQuantity}"/>
+                                    <Text text="{ordenes>unitOfMeasure}"/>
+                                    <ObjectStatus
+                                        text="{ordenes>status}"
+                                        state="{path: 'ordenes>status', formatter: '.formatter.orderStatusState'}"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </content>
+            </Panel>
         </content>
-	    </Panel>		
-        
-  
+    </Panel>
+
 </mvc:View>
