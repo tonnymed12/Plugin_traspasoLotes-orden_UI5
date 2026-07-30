@@ -125,14 +125,12 @@ sap.ui.define([
                 return new Promise(function (resolve) {
                     this.ajaxPostRequest(sUrl, oBody,
                         function (oRes) {
-                            // La API devuelve content[] con los registros de inventario
                             var aItems = (oRes && oRes.content) || (Array.isArray(oRes) ? oRes : []);
-                            var oItem = aItems[0];
-                            if (oItem) {
-                                // Ajustar field names si la respuesta usa nombres distintos
-                                oLote.cantidad = oItem.quantity != null ? oItem.quantity
-                                    : (oItem.stockQuantity != null ? oItem.stockQuantity : "");
-                                oLote.uom = oItem.unitOfMeasure || oItem.uom || oItem.baseUnitOfMeasure || "";
+                            // Solo stock libre (sin reserva de orden)
+                            var oItem = aItems.find(function (i) { return i.reservedOrder === null; });
+                            if (oItem && oItem.quantityOnHand) {
+                                oLote.cantidad = oItem.quantityOnHand.value != null ? oItem.quantityOnHand.value : "";
+                                oLote.uom = oItem.quantityOnHand.internalUnitOfMeasure || "";
                             }
                             resolve();
                         }.bind(this),
