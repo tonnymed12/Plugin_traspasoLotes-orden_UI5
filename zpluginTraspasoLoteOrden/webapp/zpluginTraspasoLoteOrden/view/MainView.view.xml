@@ -194,13 +194,13 @@
                                 type="Active">
                                 <cells>
                                     <Text text="{ordenes>order}"/>
-                                    <Text text="{ordenes>material}"/>
-                                    <Text text="{path: 'ordenes>createdDateTime', formatter: '.formatter.formatDate'}"/>
-                                    <Text text="{ordenes>plannedQuantity}"/>
-                                    <Text text="{ordenes>unitOfMeasure}"/>
+                                    <Text text="{ordenes>material/material}"/>
+                                    <Text text="{path: 'ordenes>plannedStartDate', formatter: '.formatter.formatDate'}"/>
+                                    <Text text="{ordenes>productionQuantity}"/>
+                                    <Text text="{ordenes>productionUnitOfMeasure}"/>
                                     <ObjectStatus
-                                        text="{ordenes>status}"
-                                        state="{path: 'ordenes>status', formatter: '.formatter.orderStatusState'}"/>
+                                        text="{ordenes>executionStatus}"
+                                        state="{path: 'ordenes>executionStatus', formatter: '.formatter.orderStatusState'}"/>
                                 </cells>
                             </ColumnListItem>
                         </items>

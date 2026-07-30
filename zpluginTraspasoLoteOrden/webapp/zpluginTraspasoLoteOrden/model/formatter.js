@@ -20,7 +20,7 @@ sap.ui.define([], function () {
         },
         // Maps order status key to state for ObjectStatus
         orderStatusState: function (sStatus) {
-            var mMap = { "NEW": "None", "RELEASED": "Success", "HOLD": "Warning", "DONE": "None", "CLOSED": "None" };
+            var mMap = { "ACTIVE": "Success", "IN_QUEUE": "None", "DONE": "None", "HOLD": "Warning", "COMPLETE": "None" };
             return mMap[sStatus] || "None";
         }
     };

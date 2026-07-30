@@ -34,12 +34,11 @@ sap.ui.define([
             this.getView().byId("backButton").setVisible(oCfg.backButtonVisible);
             this.getView().byId("closeButton").setVisible(oCfg.closeButtonVisible);
             this.getView().byId("headerTitle").setText(oCfg.title);
-
-            this._cargarLotesOrigen();
         },
 
         onBeforeRenderingPlugin: function () {
-            // reservado para uso futuro
+            // POD context is available here (not yet in onAfterRendering)
+            this._cargarLotesOrigen();
         },
 
         onExit: function () {
