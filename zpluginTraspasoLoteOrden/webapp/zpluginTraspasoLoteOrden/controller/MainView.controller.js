@@ -118,9 +118,9 @@ sap.ui.define([
             var aPromesas = aLotes.map(function (oLote) {
                 var oBody = {
                     plant: oPODParams.PLANT_ID,
-                    materials: [oLote.material],
-                    batchNumbers: [oLote.lote],
-                    status: ["UNRESTRICTED"]
+                    material: oLote.material,
+                    batchNumber: oLote.lote,
+                    status: "UNRESTRICTED"
                 };
                 return new Promise(function (resolve) {
                     this.ajaxPostRequest(sUrl, oBody,
