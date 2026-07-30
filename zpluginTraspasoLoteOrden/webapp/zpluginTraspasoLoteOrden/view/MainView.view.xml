@@ -98,42 +98,19 @@
                         wrap="Wrap"
                         class="sapUiSmallMarginBeginEnd sapUiSmallMarginBottom">
 
-                        <VBox width="20%" class="sapUiSmallMarginEnd">
+                        <VBox width="25%" class="sapUiSmallMarginEnd">
                             <Label text="{i18n>filtro.orden}" labelFor="inputOrden"/>
                             <Input id="inputOrden" placeholder="{i18n>filtro.orden.placeholder}" submit="onBuscarOrdenes"/>
                         </VBox>
 
-                        <VBox width="15%" class="sapUiSmallMarginEnd">
+                        <VBox width="20%" class="sapUiSmallMarginEnd">
                             <Label text="{i18n>filtro.fechaDesde}" labelFor="dpFechaDesde"/>
                             <DatePicker id="dpFechaDesde" valueFormat="yyyy-MM-dd" displayFormat="dd/MM/yyyy"/>
                         </VBox>
 
-                        <VBox width="15%" class="sapUiSmallMarginEnd">
+                        <VBox width="20%" class="sapUiSmallMarginEnd">
                             <Label text="{i18n>filtro.fechaHasta}" labelFor="dpFechaHasta"/>
                             <DatePicker id="dpFechaHasta" valueFormat="yyyy-MM-dd" displayFormat="dd/MM/yyyy"/>
-                        </VBox>
-
-                        <VBox width="15%" class="sapUiSmallMarginEnd">
-                            <Label text="{i18n>filtro.tipo}" labelFor="selTipo"/>
-                            <Select id="selTipo">
-                                <items>
-                                    <core:Item key=""       text="{i18n>filtro.tipo.todos}"/>
-                                    <core:Item key="PRODUCTION" text="{i18n>filtro.tipo.produccion}"/>
-                                    <core:Item key="REWORK"     text="{i18n>filtro.tipo.retrabajo}"/>
-                                </items>
-                            </Select>
-                        </VBox>
-
-                        <VBox width="15%" class="sapUiSmallMarginEnd">
-                            <Label text="{i18n>filtro.status}" labelFor="selStatus"/>
-                            <Select id="selStatus">
-                                <items>
-                                    <core:Item key=""         text="{i18n>filtro.status.todos}"/>
-                                    <core:Item key="RELEASED" text="{i18n>filtro.status.released}"/>
-                                    <core:Item key="NEW"      text="{i18n>filtro.status.new}"/>
-                                    <core:Item key="HOLD"     text="{i18n>filtro.status.hold}"/>
-                                </items>
-                            </Select>
                         </VBox>
 
                         <VBox justifyContent="End">

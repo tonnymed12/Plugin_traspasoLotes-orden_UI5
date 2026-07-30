@@ -69,8 +69,8 @@ sap.ui.define([
                 if (!oData || !oData.customValues) { return; }
 
                 var aLotes = this._extraerLotesDeCustomValues(oData.customValues);
-                this.getView().getModel("lotesOrigen").setProperty("/items", aLotes);
-                this._oOperationActivityData = oData; // guardamos para el traspaso
+                this._oOperationActivityData = oData;
+                this._enriquecerLotesConStock(aLotes, oPODParams);
             }.bind(this));
         },
 
@@ -101,6 +101,51 @@ sap.ui.define([
             this._cargarLotesOrigen();
         },
 
+        /**
+         * Consulta inventory/v2/inventory (POST) para obtener stock disponible de cada lote.
+         * Actualiza cantidad y uom en el modelo lotesOrigen.
+         */
+        _enriquecerLotesConStock: function (aLotes, oPODParams) {
+            var oView = this.getView();
+            var oSapApi = this.getPublicApiRestDataSourceUri();
+            var sUrl = oSapApi + ApiPaths.INVENTORIES_V2;
+
+            // Poblar tabla de inmediato con los lotes sin cantidad mientras carga el stock
+            oView.getModel("lotesOrigen").setProperty("/items", aLotes);
+
+            if (aLotes.length === 0) { return; }
+
+            var aPromesas = aLotes.map(function (oLote) {
+                var oBody = {
+                    plant: oPODParams.PLANT_ID,
+                    materials: [oLote.material],
+                    batchNumbers: [oLote.lote],
+                    status: ["UNRESTRICTED"]
+                };
+                return new Promise(function (resolve) {
+                    this.ajaxPostRequest(sUrl, oBody,
+                        function (oRes) {
+                            // La API devuelve content[] con los registros de inventario
+                            var aItems = (oRes && oRes.content) || (Array.isArray(oRes) ? oRes : []);
+                            var oItem = aItems[0];
+                            if (oItem) {
+                                // Ajustar field names si la respuesta usa nombres distintos
+                                oLote.cantidad = oItem.quantity != null ? oItem.quantity
+                                    : (oItem.stockQuantity != null ? oItem.stockQuantity : "");
+                                oLote.uom = oItem.unitOfMeasure || oItem.uom || oItem.baseUnitOfMeasure || "";
+                            }
+                            resolve();
+                        }.bind(this),
+                        function () { resolve(); } // stock no bloquea si falla
+                    );
+                }.bind(this));
+            }.bind(this));
+
+            Promise.all(aPromesas).then(function () {
+                oView.getModel("lotesOrigen").refresh(true);
+            });
+        },
+
         // ─── Búsqueda de órdenes destino ─────────────────────────────────────────
 
         onBuscarOrdenes: function () {
@@ -108,18 +153,14 @@ sap.ui.define([
             var oPODParams = this._getPODParams();
             if (!oPODParams) { return; }
 
-            var sOrden       = oView.byId("inputOrden").getValue().trim();
-            var sFechaDesde  = oView.byId("dpFechaDesde").getValue();
-            var sFechaHasta  = oView.byId("dpFechaHasta").getValue();
-            var sTipo        = oView.byId("selTipo").getSelectedKey();
-            var sStatus      = oView.byId("selStatus").getSelectedKey();
+            var sOrden      = oView.byId("inputOrden").getValue().trim();
+            var sFechaDesde = oView.byId("dpFechaDesde").getValue();
+            var sFechaHasta = oView.byId("dpFechaHasta").getValue();
 
             var oParams = { plant: oPODParams.PLANT_ID, size: 50 };
             if (sOrden)      { oParams.order = sOrden; }
             if (sFechaDesde) { oParams.createdDateTimeFrom = sFechaDesde + "T00:00:00"; }
             if (sFechaHasta) { oParams.createdDateTimeTo   = sFechaHasta + "T23:59:59"; }
-            if (sTipo)       { oParams.orderType = sTipo; }
-            if (sStatus)     { oParams.status    = sStatus; }
 
             var oSapApi = this.getPublicApiRestDataSourceUri();
             var sUrl = oSapApi + ApiPaths.ORDERS;
