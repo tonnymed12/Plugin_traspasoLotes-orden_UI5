@@ -11,8 +11,6 @@ sap.ui.define([
 
     // Slot prefix used by the NB scanning plugin to store MATERIAL!LOTE!SECUENCIA
     var SLOT_PREFIX = "SLOT";
-    var SLOT_QTY_ATTR = "SLOTQTY";
-    var SLOT_TIPO_ATTR = "SLOTTIPO";
 
     return PluginViewController.extend(
         "serviacero.custom.plugins.zpluginTraspasoLoteOrden.zpluginTraspasoLoteOrden.controller.MainView", {
@@ -62,6 +60,7 @@ sap.ui.define([
             var sUrl = oSapApi + ApiPaths.OPERATION_ACTIVITIES;
             var oParams = {
                 plant: oPODParams.PLANT_ID,
+                order: oPODParams.ORDER_ID,
                 operation: oPODParams.OPERATION_ACTIVITY
             };
 
@@ -84,8 +83,6 @@ sap.ui.define([
             return aCustomValues
                 .filter(function (cv) {
                     return cv.attribute && cv.attribute.startsWith(SLOT_PREFIX) &&
-                        cv.attribute !== SLOT_QTY_ATTR &&
-                        cv.attribute !== SLOT_TIPO_ATTR &&
                         cv.value && cv.value.trim() !== "";
                 })
                 .map(function (cv) {
@@ -252,7 +249,8 @@ sap.ui.define([
             var aCustomValuesDestino = (oOpDestino.customValues || []).slice();
 
             aLotesOrigen.forEach(function (oLote, iIdx) {
-                var sAtributo = SLOT_PREFIX + (iIdx + 1);
+                // Format matches NB plugin: SLOT001, SLOT002...
+                var sAtributo = SLOT_PREFIX + (iIdx + 1).toString().padStart(3, "0");
                 var sValor    = oLote.material + "!" + oLote.lote + "!" + (iIdx + 1);
 
                 var oExistente = aCustomValuesDestino.find(function (cv) { return cv.attribute === sAtributo; });
@@ -263,13 +261,7 @@ sap.ui.define([
                 }
             });
 
-            var oSlotQty = aCustomValuesDestino.find(function (cv) { return cv.attribute === SLOT_QTY_ATTR; });
-            if (oSlotQty) {
-                oSlotQty.value = String(aLotesOrigen.length);
-            } else {
-                aCustomValuesDestino.push({ attribute: SLOT_QTY_ATTR, value: String(aLotesOrigen.length) });
-            }
-
+            // OA no necesita SLOTQTY en el payload (solo existe a nivel WC)
             return this._setOperationActivityCustomValues(oOpDestino, aCustomValuesDestino)
                 .then(function () {
                     MessageToast.show(oBundle.getText("traspasoExitoso", [aLotesOrigen.length, oOrdenDestino.order]));
@@ -288,13 +280,19 @@ sap.ui.define([
         // ─── Helpers ──────────────────────────────────────────────────────────────
 
         _getPODParams: function () {
-            var oPODSelectionContext = this.getPodSelectionContext ? this.getPodSelectionContext() : null;
-            if (!oPODSelectionContext) { return null; }
+            var oPodModel = this.getPodSelectionModel ? this.getPodSelectionModel() : null;
+            if (!oPodModel) { return null; }
+            var oData = oPodModel.getData ? oPodModel.getData() : (oPodModel.oData || {});
+            var sOrderRef = (oData.selectedOrderData && oData.selectedOrderData.orderRef) || "";
+            var sPlant = sOrderRef ? String(String(sOrderRef).split(":")[1]).split(",")[0] : "";
+            var sOrder = (oData.selectedOrderData && oData.selectedOrderData.order) || "";
+            var sOperation = (oData.selectedPhaseData && oData.selectedPhaseData.operation &&
+                oData.selectedPhaseData.operation.operation) || "";
+            if (!sPlant || !sOperation) { return null; }
             return {
-                PLANT_ID: oPODSelectionContext.getPlant ? oPODSelectionContext.getPlant() : (oPODSelectionContext.plant || ""),
-                OPERATION_ACTIVITY: oPODSelectionContext.getOperationActivity
-                    ? oPODSelectionContext.getOperationActivity()
-                    : (oPODSelectionContext.operationActivity || "")
+                PLANT_ID: sPlant,
+                ORDER_ID: sOrder,
+                OPERATION_ACTIVITY: sOperation
             };
         },
 
