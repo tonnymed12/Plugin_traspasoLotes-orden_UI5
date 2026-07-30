@@ -8,7 +8,7 @@ sap.ui.define([], function () {
 
         /** POST */
         // queryInventoriesUsingPost_V2 — stock disponible por planta/material/lote
-        INVENTORIES_V2: "inventory/v2/inventory",
+        INVENTORIES_V2: "inventory/v2/inventories",
 
         /** Production Process — POST via ajaxPostRequest */
         // Persiste customValues en una operationActivity (mismo PP que usa el plugin NB)
