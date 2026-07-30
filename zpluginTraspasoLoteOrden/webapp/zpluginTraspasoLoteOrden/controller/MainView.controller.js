@@ -58,9 +58,9 @@ sap.ui.define([
 
             var oSapApi = this.getPublicApiRestDataSourceUri();
             var sUrl = oSapApi + ApiPaths.OPERATION_ACTIVITIES;
+            // Same pattern as NB plugin: source OA is read by plant+operation only
             var oParams = {
                 plant: oPODParams.PLANT_ID,
-                order: oPODParams.ORDER_ID,
                 operation: oPODParams.OPERATION_ACTIVITY
             };
 
