@@ -279,21 +279,21 @@ sap.ui.define([
 
         // ─── Helpers ──────────────────────────────────────────────────────────────
 
+        // Same access pattern as NB Commons.getPODParams
         _getPODParams: function () {
-            var oPodModel = this.getPodSelectionModel ? this.getPodSelectionModel() : null;
-            if (!oPodModel) { return null; }
-            var oData = oPodModel.getData ? oPodModel.getData() : (oPodModel.oData || {});
-            var sOrderRef = (oData.selectedOrderData && oData.selectedOrderData.orderRef) || "";
-            var sPlant = sOrderRef ? String(String(sOrderRef).split(":")[1]).split(",")[0] : "";
-            var sOrder = (oData.selectedOrderData && oData.selectedOrderData.order) || "";
-            var sOperation = (oData.selectedPhaseData && oData.selectedPhaseData.operation &&
-                oData.selectedPhaseData.operation.operation) || "";
-            if (!sPlant || !sOperation) { return null; }
-            return {
-                PLANT_ID: sPlant,
-                ORDER_ID: sOrder,
-                OPERATION_ACTIVITY: sOperation
-            };
+            try {
+                var oModels = this.getOwnerComponent().oPropagatedProperties.oModels;
+                var oData = oModels.podSelectionModel.oData;
+                var sOrderRef = oData.selectedOrderData.orderRef || "";
+                var sPlant = String(String(sOrderRef).split(":")[1]).split(",")[0];
+                var sOrder = oData.selectedOrderData.order || "";
+                var sOperation = oData.selectedPhaseData.operation.operation || "";
+                if (!sPlant || !sOperation) { return null; }
+                return { PLANT_ID: sPlant, ORDER_ID: sOrder, OPERATION_ACTIVITY: sOperation };
+            } catch (e) {
+                console.error("[Traspaso] _getPODParams error:", e);
+                return null;
+            }
         },
 
         isSubscribingToNotifications: function () { return false; },
