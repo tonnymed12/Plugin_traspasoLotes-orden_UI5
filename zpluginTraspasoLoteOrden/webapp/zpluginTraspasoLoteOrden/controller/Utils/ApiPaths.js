@@ -6,11 +6,11 @@ sap.ui.define([], function () {
         OPERATION_ACTIVITIES: "operationActivity/v1/operationActivities",
         WORKCENTERS: "workcenter/v2/workcenters",
 
-        /** PATCH */
-        ORDER_CUSTOM_VALUES: "order/v1/orders/customValues",
+        /** Production Process — POST via ajaxPostRequest */
+        // Persiste customValues en una operationActivity (mismo PP que usa el plugin NB)
+        putBatchSlotOperationActivity: "/pe/api/v1/process/processDefinitions/start?key=REG_186243f5-3d68-45df-b30f-515331cb0fab&async=false",
 
-        /** Production Process — ajusta la key cuando tengas el proceso de traspaso */
-        getLotesOperacion: "/pe/api/v1/process/processDefinitions/start?key=REG_PENDIENTE_getLotesOperacion&async=false",
-        traspasoLotes:     "/pe/api/v1/process/processDefinitions/start?key=REG_PENDIENTE_traspasoLotes&async=false"
+        // Reemplazar key cuando esté disponible el proceso dedicado de traspaso
+        traspasoLotes: "/pe/api/v1/process/processDefinitions/start?key=REG_PENDIENTE_traspasoLotes&async=false"
     };
 });
