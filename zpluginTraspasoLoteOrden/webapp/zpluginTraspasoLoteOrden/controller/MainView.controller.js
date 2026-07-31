@@ -164,7 +164,8 @@ sap.ui.define([
             var sUrl = oSapApi + ApiPaths.ORDERS;
 
             this.ajaxGetRequest(sUrl, oParams, function (oRes) {
-                var aContent = (oRes && oRes.content) || [];
+                // GET /v1/orders returns a single object, not a paginated content[]
+                var aContent = oRes && oRes.content ? oRes.content : (oRes && oRes.order ? [oRes] : []);
                 var oOrdenesModel = this.getView().getModel("ordenes");
                 oOrdenesModel.setProperty("/items", aContent);
                 oOrdenesModel.setProperty("/ordenSeleccionada", false);
