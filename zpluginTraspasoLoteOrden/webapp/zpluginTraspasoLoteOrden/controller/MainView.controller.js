@@ -151,14 +151,14 @@ sap.ui.define([
             var oPODParams = this._getPODParams();
             if (!oPODParams) { return; }
 
-            var sOrden      = oView.byId("inputOrden").getValue().trim();
-            var sFechaDesde = oView.byId("dpFechaDesde").getValue();
-            var sFechaHasta = oView.byId("dpFechaHasta").getValue();
+            var sOrden = oView.byId("inputOrden").getValue().trim();
+            if (!sOrden) {
+                var oBundle = this.getView().getModel("i18n").getResourceBundle();
+                MessageToast.show(oBundle.getText("filtro.orden.requerido"));
+                return;
+            }
 
-            var oParams = { plant: oPODParams.PLANT_ID, size: 50 };
-            if (sOrden)      { oParams.order = sOrden; }
-            if (sFechaDesde) { oParams.createdDateTimeFrom = sFechaDesde + "T00:00:00"; }
-            if (sFechaHasta) { oParams.createdDateTimeTo   = sFechaHasta + "T23:59:59"; }
+            var oParams = { plant: oPODParams.PLANT_ID, order: sOrden };
 
             var oSapApi = this.getPublicApiRestDataSourceUri();
             var sUrl = oSapApi + ApiPaths.ORDERS;

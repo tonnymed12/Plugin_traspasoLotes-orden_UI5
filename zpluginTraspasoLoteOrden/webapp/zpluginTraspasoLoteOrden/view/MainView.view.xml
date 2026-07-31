@@ -98,19 +98,9 @@
                         wrap="Wrap"
                         class="sapUiSmallMarginBeginEnd sapUiSmallMarginBottom">
 
-                        <VBox width="25%" class="sapUiSmallMarginEnd">
+                        <VBox width="40%" class="sapUiSmallMarginEnd">
                             <Label text="{i18n>filtro.orden}" labelFor="inputOrden"/>
                             <Input id="inputOrden" placeholder="{i18n>filtro.orden.placeholder}" submit="onBuscarOrdenes"/>
-                        </VBox>
-
-                        <VBox width="20%" class="sapUiSmallMarginEnd">
-                            <Label text="{i18n>filtro.fechaDesde}" labelFor="dpFechaDesde"/>
-                            <DatePicker id="dpFechaDesde" valueFormat="yyyy-MM-dd" displayFormat="dd/MM/yyyy"/>
-                        </VBox>
-
-                        <VBox width="20%" class="sapUiSmallMarginEnd">
-                            <Label text="{i18n>filtro.fechaHasta}" labelFor="dpFechaHasta"/>
-                            <DatePicker id="dpFechaHasta" valueFormat="yyyy-MM-dd" displayFormat="dd/MM/yyyy"/>
                         </VBox>
 
                         <VBox justifyContent="End">
@@ -158,9 +148,9 @@
                             </Toolbar>
                         </headerToolbar>
                         <columns>
-                            <Column width="20%" hAlign="Left"><Text text="{i18n>col.orden}"/></Column>
-                            <Column width="25%" hAlign="Left"><Text text="{i18n>col.material}"/></Column>
-                            <Column width="15%" hAlign="Left"><Text text="{i18n>col.fechaCreacion}"/></Column>
+                            <Column width="15%" hAlign="Left"><Text text="{i18n>col.orden}"/></Column>
+                            <Column width="15%" hAlign="Left"><Text text="{i18n>col.material}"/></Column>
+                            <Column width="30%" hAlign="Left"><Text text="{i18n>col.descripcion}"/></Column>
                             <Column width="15%" hAlign="Right"><Text text="{i18n>col.cantidadPlaneada}"/></Column>
                             <Column width="10%" hAlign="Left"><Text text="{i18n>col.uom}"/></Column>
                             <Column width="15%" hAlign="Center"><Text text="{i18n>col.status}"/></Column>
@@ -172,7 +162,7 @@
                                 <cells>
                                     <Text text="{ordenes>order}"/>
                                     <Text text="{ordenes>material/material}"/>
-                                    <Text text="{path: 'ordenes>plannedStartDate', formatter: '.formatter.formatDate'}"/>
+                                    <Text text="{ordenes>material/description}"/>
                                     <Text text="{ordenes>productionQuantity}"/>
                                     <Text text="{ordenes>productionUnitOfMeasure}"/>
                                     <ObjectStatus
