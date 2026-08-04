@@ -15,6 +15,6 @@ sap.ui.define([], function () {
         putBatchSlotOperationActivity: "/pe/api/v1/process/processDefinitions/start?key=REG_186243f5-3d68-45df-b30f-515331cb0fab&async=false",
 
         // Reemplazar key cuando esté disponible el proceso dedicado de traspaso
-        traspasoLotes: "/pe/api/v1/process/processDefinitions/start?key=REG_PENDIENTE_traspasoLotes&async=false"
+        traspasoLotes: "/pe/api/v1/process/processDefinitions/start?key=REG_47d38262-9430-49fa-a4a6-6e2baa33c4d9&async=false"
     };
 });

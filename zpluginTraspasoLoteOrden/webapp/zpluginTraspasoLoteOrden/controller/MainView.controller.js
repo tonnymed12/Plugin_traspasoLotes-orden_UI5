@@ -236,84 +236,53 @@ sap.ui.define([
             }.bind(this));
         },
 
-        /**
-         * Persiste customValues en una operationActivity via PP — mismo patrón que el plugin NB.
-         * @param {Object} oOAData  operationActivity del backend (plant, operation, version)
-         * @param {Array}  aCustomValues  array de { attribute, value }
-         */
-        _setOperationActivityCustomValues: function (oOAData, aCustomValues) {
-            var oSapApi = this.getPublicApiRestDataSourceUri();
-            var oPayload = {
-                inData: [{
-                    plant: oOAData.plant,
-                    operation: oOAData.operation,
-                    version: oOAData.version || "",
-                    customValues: aCustomValues
-                }]
-            };
-            return new Promise(function (resolve, reject) {
-                this.ajaxPostRequest(
-                    oSapApi + ApiPaths.putBatchSlotOperationActivity,
-                    oPayload,
-                    function (oRes) { resolve(oRes); }.bind(this),
-                    function (oErr) { reject(oErr); }.bind(this)
-                );
-            }.bind(this));
-        },
-
         _ejecutarTraspaso: function (aLotesOrigen, oOrdenDestino) {
             var oPODParams = this._getPODParams();
             if (!oPODParams) { return; }
 
             var oBundle = this.getView().getModel("i18n").getResourceBundle();
+            var oSapApi = this.getPublicApiRestDataSourceUri();
+            var oView = this.getView();
+
+            oView.byId("panelPlugin").setBusy(true);
 
             this._getOperationActivityForOrder(oPODParams.PLANT_ID, oOrdenDestino.order)
                 .then(function (oOpDestino) {
-                    return this._copiarSlotsEnOperacion(aLotesOrigen, oOpDestino, oOrdenDestino, oBundle);
+                    var oPayload = {
+                        inPlanta: oPODParams.PLANT_ID,
+                        inOperacionOrigen: oPODParams.OPERATION_ACTIVITY,
+                        inOperacionDestino: oOpDestino.operation
+                    };
+                    return new Promise(function (resolve, reject) {
+                        this.ajaxPostRequest(
+                            oSapApi + ApiPaths.traspasoLotes,
+                            oPayload,
+                            function (oRes) { resolve(oRes); }.bind(this),
+                            function (oErr) { reject(oErr); }.bind(this)
+                        );
+                    }.bind(this));
                 }.bind(this))
-                .catch(function (oErr) {
-                    if (oErr === "no_ops") {
-                        MessageBox.error(oBundle.getText("errorSinOperacionDestino", [oOrdenDestino.order]));
-                    } else {
-                        MessageBox.error(oBundle.getText("errorTraspaso"));
-                    }
-                });
-        },
-
-        /**
-         * Construye el payload de customValues con formato MATERIAL!LOTE!SECUENCIA
-         * y lo persiste en la operationActivity destino via ajaxPostRequest al PP.
-         */
-        _copiarSlotsEnOperacion: function (aLotesOrigen, oOpDestino, oOrdenDestino, oBundle) {
-            var aCustomValuesDestino = (oOpDestino.customValues || []).slice();
-
-            aLotesOrigen.forEach(function (oLote, iIdx) {
-                // Format matches NB plugin: SLOT001, SLOT002...
-                var sAtributo = SLOT_PREFIX + (iIdx + 1).toString().padStart(3, "0");
-                var sValor    = oLote.material + "!" + oLote.lote + "!" + (iIdx + 1);
-
-                var oExistente = aCustomValuesDestino.find(function (cv) { return cv.attribute === sAtributo; });
-                if (oExistente) {
-                    oExistente.value = sValor;
-                } else {
-                    aCustomValuesDestino.push({ attribute: sAtributo, value: sValor });
-                }
-            });
-
-            // OA no necesita SLOTQTY en el payload (solo existe a nivel WC)
-            return this._setOperationActivityCustomValues(oOpDestino, aCustomValuesDestino)
-                .then(function () {
-                    MessageToast.show(oBundle.getText("traspasoExitoso", [aLotesOrigen.length, oOrdenDestino.order]));
+                .then(function (oRes) {
+                    oView.byId("panelPlugin").setBusy(false);
+                    var sMsg = (oRes && (oRes.outMensaje || oRes.message)) ||
+                        oBundle.getText("traspasoExitoso", [aLotesOrigen.length, oOrdenDestino.order]);
+                    MessageToast.show(sMsg);
                     this._cargarLotesOrigen();
+                    this.getView().getModel("ordenes").setProperty("/items", []);
                     this.getView().getModel("ordenes").setProperty("/ordenSeleccionada", false);
                     this._oOrdenDestino = null;
                 }.bind(this))
                 .catch(function (oErr) {
-                    var sMsg = (oErr && oErr.responseJSON &&
-                        (oErr.responseJSON.message || oErr.responseJSON.displayMessage)) ||
-                        oBundle.getText("errorTraspaso");
-                    MessageBox.error(sMsg);
-                });
+                    oView.byId("panelPlugin").setBusy(false);
+                    if (oErr === "no_ops") {
+                        MessageBox.error(oBundle.getText("errorSinOperacionDestino", [oOrdenDestino.order]));
+                    } else {
+                        var sMsg = (oErr && oErr.responseJSON &&
+                            (oErr.responseJSON.message || oErr.responseJSON.displayMessage)) ||
+                            oBundle.getText("errorTraspaso");
+                        MessageBox.error(sMsg);
+                    }
+                }.bind(this));
         },
 
         // ─── Helpers ──────────────────────────────────────────────────────────────
