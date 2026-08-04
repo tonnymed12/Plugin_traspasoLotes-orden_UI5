@@ -223,15 +223,16 @@ sap.ui.define([
         _getOperationActivityForOrder: function (sPlant, sOrder) {
             var oSapApi = this.getPublicApiRestDataSourceUri();
             return new Promise(function (resolve, reject) {
+                // size=200 ensures all plant operations fit in one page (API ignores 'order' filter)
                 this.ajaxGetRequest(
                     oSapApi + ApiPaths.OPERATION_ACTIVITIES,
-                    { plant: sPlant, order: sOrder, size: 50 },
+                    { plant: sPlant, size: 200 },
                     function (oRes) {
                         var aOps = (oRes && oRes.content) || [];
-                        if (aOps.length === 0) { reject("no_ops"); return; }
-                        // Client-side filter: operation name follows {orderId}-{phase}-{step}
+                        // Match NORMAL_OPERATION whose name starts with "{orderId}-"
                         var oMatch = aOps.find(function (oOp) {
-                            return oOp.operation && oOp.operation.startsWith(sOrder + "-");
+                            return oOp.type === "NORMAL_OPERATION" &&
+                                oOp.operation && oOp.operation.startsWith(sOrder + "-");
                         });
                         if (!oMatch) { reject("no_ops"); return; }
                         resolve(oMatch);
