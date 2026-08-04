@@ -264,9 +264,24 @@ sap.ui.define([
                 }.bind(this))
                 .then(function (oRes) {
                     oView.byId("panelPlugin").setBusy(false);
-                    var sMsg = (oRes && (oRes.outMensaje || oRes.message)) ||
-                        oBundle.getText("traspasoExitoso", [aLotesOrigen.length, oOrdenDestino.order]);
-                    MessageToast.show(sMsg);
+
+                    var bOk = oRes && (oRes.outStatus === "true" || oRes.outStatus === true);
+
+                    if (!bOk) {
+                        MessageBox.error((oRes && oRes.outMensaje) || oBundle.getText("errorTraspaso"));
+                        return;
+                    }
+
+                    // outConfirmation is StringArray; element 0 is a JSON string
+                    var oConfirm = null;
+                    try {
+                        var aConf = oRes.outConfirmation || [];
+                        if (aConf.length > 0) { oConfirm = JSON.parse(aConf[0]); }
+                    } catch (e) { /* fallback to i18n if parse fails */ }
+
+                    var iTransferred = oConfirm ? oConfirm.slotsTransferred : aLotesOrigen.length;
+                    MessageToast.show(oBundle.getText("traspasoExitoso", [iTransferred, oOrdenDestino.order]));
+
                     this._cargarLotesOrigen();
                     this.getView().getModel("ordenes").setProperty("/items", []);
                     this.getView().getModel("ordenes").setProperty("/ordenSeleccionada", false);
