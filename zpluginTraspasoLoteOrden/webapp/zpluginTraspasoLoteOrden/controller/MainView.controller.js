@@ -225,11 +225,16 @@ sap.ui.define([
             return new Promise(function (resolve, reject) {
                 this.ajaxGetRequest(
                     oSapApi + ApiPaths.OPERATION_ACTIVITIES,
-                    { plant: sPlant, order: sOrder },
+                    { plant: sPlant, order: sOrder, size: 50 },
                     function (oRes) {
                         var aOps = (oRes && oRes.content) || [];
                         if (aOps.length === 0) { reject("no_ops"); return; }
-                        resolve(aOps[0]);
+                        // Client-side filter: operation name follows {orderId}-{phase}-{step}
+                        var oMatch = aOps.find(function (oOp) {
+                            return oOp.operation && oOp.operation.startsWith(sOrder + "-");
+                        });
+                        if (!oMatch) { reject("no_ops"); return; }
+                        resolve(oMatch);
                     }.bind(this),
                     function (oErr) { reject(oErr); }.bind(this)
                 );
