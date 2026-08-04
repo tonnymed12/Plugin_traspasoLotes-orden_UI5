@@ -170,6 +170,7 @@ sap.ui.define([
                 oOrdenesModel.setProperty("/items", aContent);
                 oOrdenesModel.setProperty("/ordenSeleccionada", false);
                 this._oOrdenDestino = null;
+                oView.byId("inputOrden").setValue("");
 
                 if (aContent.length === 0) {
                     var oBundle = this.getView().getModel("i18n").getResourceBundle();
