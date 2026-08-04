@@ -4,6 +4,7 @@ sap.ui.define([], function () {
         /** GET */
         ORDERS: "order/v1/orders",
         OPERATION_ACTIVITIES: "operationActivity/v1/operationActivities",
+        SFC_DETAIL: "sfc/v1/sfcdetail",
         WORKCENTERS: "workcenter/v2/workcenters",
 
         /** POST */

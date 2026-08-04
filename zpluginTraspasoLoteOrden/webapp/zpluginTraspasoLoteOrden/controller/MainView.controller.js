@@ -220,22 +220,22 @@ sap.ui.define([
         /**
          * Obtiene la primera operationActivity de una orden. Devuelve Promise<operationActivity>.
          */
-        _getOperationActivityForOrder: function (sPlant, sOrder) {
+        // Obtiene la operacion de la orden destino via SFC detail (O(1), sin paginacion)
+        _getOperationActivityForOrder: function (sPlant, oOrdenDestino) {
             var oSapApi = this.getPublicApiRestDataSourceUri();
+            var sSfc = oOrdenDestino.sfcs && oOrdenDestino.sfcs[0];
+            if (!sSfc) { return Promise.reject("no_sfc"); }
+
             return new Promise(function (resolve, reject) {
-                // size=200 ensures all plant operations fit in one page (API ignores 'order' filter)
                 this.ajaxGetRequest(
-                    oSapApi + ApiPaths.OPERATION_ACTIVITIES,
-                    { plant: sPlant, size: 200 },
+                    oSapApi + ApiPaths.SFC_DETAIL,
+                    { plant: sPlant, sfc: sSfc },
                     function (oRes) {
-                        var aOps = (oRes && oRes.content) || [];
-                        // Match NORMAL_OPERATION whose name starts with "{orderId}-"
-                        var oMatch = aOps.find(function (oOp) {
-                            return oOp.type === "NORMAL_OPERATION" &&
-                                oOp.operation && oOp.operation.startsWith(sOrder + "-");
-                        });
-                        if (!oMatch) { reject("no_ops"); return; }
-                        resolve(oMatch);
+                        var aSteps = (oRes && oRes.steps) || [];
+                        var sOperation = aSteps.length > 0 &&
+                            aSteps[0].operation && aSteps[0].operation.operation;
+                        if (!sOperation) { reject("no_ops"); return; }
+                        resolve({ operation: sOperation });
                     }.bind(this),
                     function (oErr) { reject(oErr); }.bind(this)
                 );
@@ -252,7 +252,7 @@ sap.ui.define([
 
             oView.byId("panelPlugin").setBusy(true);
 
-            this._getOperationActivityForOrder(oPODParams.PLANT_ID, oOrdenDestino.order)
+            this._getOperationActivityForOrder(oPODParams.PLANT_ID, oOrdenDestino)
                 .then(function (oOpDestino) {
                     var oPayload = {
                         inPlanta: oPODParams.PLANT_ID,
@@ -295,7 +295,7 @@ sap.ui.define([
                 }.bind(this))
                 .catch(function (oErr) {
                     oView.byId("panelPlugin").setBusy(false);
-                    if (oErr === "no_ops") {
+                    if (oErr === "no_ops" || oErr === "no_sfc") {
                         MessageBox.error(oBundle.getText("errorSinOperacionDestino", [oOrdenDestino.order]));
                     } else {
                         var sMsg = (oErr && oErr.responseJSON &&
