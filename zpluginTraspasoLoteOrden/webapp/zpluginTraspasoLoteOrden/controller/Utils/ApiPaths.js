@@ -15,6 +15,9 @@ sap.ui.define([], function () {
         // Persiste customValues en una operationActivity (mismo PP que usa el plugin NB)
         putBatchSlotOperationActivity: "/pe/api/v1/process/processDefinitions/start?key=REG_186243f5-3d68-45df-b30f-515331cb0fab&async=false",
 
+        // Valida si el material es compatible con los componentes NORMAL de la orden destino
+        validateMaterialEnOrden: "/pe/api/v1/process/processDefinitions/start?key=REG_2f5eafc1-59aa-478b-b9d7-a8bcf1941ee8&async=false",
+
         // Reemplazar key cuando esté disponible el proceso dedicado de traspaso
         traspasoLotes: "/pe/api/v1/process/processDefinitions/start?key=REG_47d38262-9430-49fa-a4a6-6e2baa33c4d9&async=false"
     };

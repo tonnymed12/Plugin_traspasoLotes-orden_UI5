@@ -253,7 +253,10 @@ sap.ui.define([
 
             oView.byId("panelPlugin").setBusy(true);
 
-            this._getOperationActivityForOrder(oPODParams.PLANT_ID, oOrdenDestino)
+            this._validarMaterialesCompatibles(aLotesOrigen, oPODParams, oOrdenDestino)
+                .then(function () {
+                    return this._getOperationActivityForOrder(oPODParams.PLANT_ID, oOrdenDestino);
+                }.bind(this))
                 .then(function (oOpDestino) {
                     var oPayload = {
                         inPlanta: oPODParams.PLANT_ID,
@@ -298,6 +301,8 @@ sap.ui.define([
                     oView.byId("panelPlugin").setBusy(false);
                     if (oErr === "no_ops" || oErr === "no_sfc") {
                         MessageBox.error(oBundle.getText("errorSinOperacionDestino", [oOrdenDestino.order]));
+                    } else if (oErr && oErr.materialIncompatible) {
+                        MessageBox.error(oErr.mensaje || oBundle.getText("errorMaterialIncompatible", [oErr.material]));
                     } else {
                         var sMsg = (oErr && oErr.responseJSON &&
                             (oErr.responseJSON.message || oErr.responseJSON.displayMessage)) ||
@@ -305,6 +310,42 @@ sap.ui.define([
                         MessageBox.error(sMsg);
                     }
                 }.bind(this));
+        },
+
+        /**
+         * Valida cada material unico de aLotesOrigen contra los componentes NORMAL
+         * de la orden destino via PP validateMaterialEnOrden. Rechaza al primer material incompatible.
+         */
+        _validarMaterialesCompatibles: function (aLotesOrigen, oPODParams, oOrdenDestino) {
+            var oSapApi = this.getPublicApiRestDataSourceUri();
+            var aMateriales = aLotesOrigen
+                .map(function (o) { return o.material; })
+                .filter(function (sMaterial, iIdx, aArr) { return sMaterial && aArr.indexOf(sMaterial) === iIdx; });
+
+            var aPromesas = aMateriales.map(function (sMaterial) {
+                var oBody = {
+                    inPlanta: oPODParams.PLANT_ID,
+                    inOrden: oOrdenDestino.order,
+                    inMaterial: sMaterial
+                };
+                return new Promise(function (resolve, reject) {
+                    this.ajaxPostRequest(
+                        oSapApi + ApiPaths.validateMaterialEnOrden,
+                        oBody,
+                        function (oRes) {
+                            var bOk = oRes && (oRes.outMaterial === true || oRes.outMaterial === "true");
+                            if (!bOk) {
+                                reject({ materialIncompatible: true, material: sMaterial, mensaje: oRes && oRes.outMensaje });
+                                return;
+                            }
+                            resolve();
+                        }.bind(this),
+                        function (oErr) { reject(oErr); }.bind(this)
+                    );
+                }.bind(this));
+            }.bind(this));
+
+            return Promise.all(aPromesas);
         },
 
         // ─── Helpers ──────────────────────────────────────────────────────────────
