@@ -292,10 +292,13 @@ sap.ui.define([
                     var iTransferred = oConfirm ? oConfirm.slotsTransferred : aLotesOrigen.length;
                     MessageToast.show(oBundle.getText("traspasoExitoso", [iTransferred, oOrdenDestino.order]));
 
+                    // Refrescar plugin completo: recargar origen y limpiar selección/tabla/búsqueda destino
                     this._cargarLotesOrigen();
                     this.getView().getModel("ordenes").setProperty("/items", []);
                     this.getView().getModel("ordenes").setProperty("/ordenSeleccionada", false);
                     this._oOrdenDestino = null;
+                    oView.byId("idOrdenesTable").removeSelections(true);
+                    oView.byId("inputOrden").setValue("");
                 }.bind(this))
                 .catch(function (oErr) {
                     oView.byId("panelPlugin").setBusy(false);
