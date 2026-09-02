@@ -73,7 +73,7 @@
                                     <Text text="{lotesOrigen>lote}"/>
                                     <!-- <Text text="{lotesOrigen>cantidad}"/> -->
                                     <ObjectNumber
-                                        number="{path: 'cantidad', type: 'sap.ui.model.type.Float', formatOptions: {minFractionDigits: 0, maxFractionDigits: 3, groupingEnabled: true}}" />
+                                        number="{path: 'lotesOrigen/cantidad', type: 'sap.ui.model.type.Float', formatOptions: {minFractionDigits: 0, maxFractionDigits: 3, groupingEnabled: true}}" />
                                     <Text text="{lotesOrigen>uom}"/>
                                 </cells>
                             </ColumnListItem>
@@ -167,7 +167,7 @@
                                     <Text text="{ordenes>material/description}"/>
                                     <!-- <Text text="{ordenes>productionQuantity}"/> -->
                                     <ObjectNumber
-                                        number="{path: 'productionQuantity', type: 'sap.ui.model.type.Float', formatOptions: {minFractionDigits: 0, maxFractionDigits: 3, groupingEnabled: true}}"/>
+                                        number="{path: 'ordenes/productionQuantity', type: 'sap.ui.model.type.Float', formatOptions: {minFractionDigits: 0, maxFractionDigits: 3, groupingEnabled: true}}"/>
                                     <Text text="{ordenes>productionUnitOfMeasure}"/>
                                     <ObjectStatus
                                         text="{ordenes>executionStatus}"
