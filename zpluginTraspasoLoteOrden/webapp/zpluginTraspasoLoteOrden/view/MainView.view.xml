@@ -71,7 +71,7 @@
                                     <Text text="{lotesOrigen>secuencia}"/>
                                     <Text text="{lotesOrigen>material}"/>
                                     <Text text="{lotesOrigen>lote}"/>
-                                    <Text text="{lotesOrigen>cantidad}"/>
+                                    <!-- <Text text="{lotesOrigen>cantidad}"/> -->
                                     <ObjectNumber
                                         number="{path: 'cantidad', type: 'sap.ui.model.type.Float', formatOptions: {minFractionDigits: 0, maxFractionDigits: 3, groupingEnabled: true}}" />
                                     <Text text="{lotesOrigen>uom}"/>
@@ -165,7 +165,7 @@
                                     <Text text="{ordenes>order}"/>
                                     <Text text="{ordenes>material/material}"/>
                                     <Text text="{ordenes>material/description}"/>
-                                    <Text text="{ordenes>productionQuantity}"/>
+                                    <!-- <Text text="{ordenes>productionQuantity}"/> -->
                                     <ObjectNumber
                                         number="{path: 'productionQuantity', type: 'sap.ui.model.type.Float', formatOptions: {minFractionDigits: 0, maxFractionDigits: 3, groupingEnabled: true}}"/>
                                     <Text text="{ordenes>productionUnitOfMeasure}"/>
